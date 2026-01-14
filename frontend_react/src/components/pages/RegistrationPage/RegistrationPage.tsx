@@ -16,14 +16,19 @@ import ActiveUserContext from "../../../Contexts/ActiveUserContext";
 const passwordRules = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string(),
-  lastName: Yup.string(),
-  email: Yup.string().email(),
-   password: Yup
-    .string()
-    .matches(passwordRules, { message: "Your password must be at least 5 characters long and include an uppercase letter (A-Z), a lowercase letter(a-z), and a number (0-9)." }),
+  firstName: Yup.string().required("**Required**").min(2).max(50),
+  lastName: Yup.string().required("**Required**").min(2).max(50),
+  email: Yup.string().email().required("**Required**"),
+  password: Yup.string()
+    .required("**Required**")
+    .max(12)
+    .matches(passwordRules, {
+      message:
+        "Your password must be at least 5 characters long and include an uppercase letter (A-Z), a lowercase letter(a-z), and a number (0-9).",
+    }),
   passwordConfirmation: Yup.string()
-     .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+    .required("**Required**")
+    .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
 const Registration = () => {
@@ -41,8 +46,18 @@ const Registration = () => {
     logout();
   }, []);
 
-  const handleSubmit = (values: { firstName: string, lastName: string, email: string; password: string }) => {
-    register(values.firstName.trim(), values.lastName.trim(), values.email.toLowerCase(), values.password.trim())
+  const handleSubmit = (values: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) => {
+    register(
+      values.firstName.trim(),
+      values.lastName.trim(),
+      values.email.toLowerCase(),
+      values.password.trim()
+    )
       .then(() => {
         console.log(values);
         navigate("/user");
@@ -72,7 +87,7 @@ const Registration = () => {
             lastName: "",
             email: "",
             password: "",
-            passwordConfirmation: ""
+            passwordConfirmation: "",
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}

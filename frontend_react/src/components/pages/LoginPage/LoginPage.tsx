@@ -14,8 +14,10 @@ import * as Yup from 'yup';
 import ActiveUserContext from '../../../Contexts/ActiveUserContext';
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string().email(),
-  password: Yup.string(),
+  email: Yup.string().email().required("**Required**"),
+    password: Yup.string()
+      .required("**Required**")
+      .max(12),
 });
 
 const Login = () => {

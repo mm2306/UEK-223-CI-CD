@@ -27,6 +27,7 @@ const UserTable = () => {
 
   const handleDelete = (id: string) => {
     UserService.deleteUser(id);
+    window.location.reload()
   };
 
   return (
