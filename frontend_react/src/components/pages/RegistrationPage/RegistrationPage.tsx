@@ -29,7 +29,7 @@ const validationSchema = Yup.object().shape({
 const Registration = () => {
   const paperStyle = {
     padding: 20,
-    height: "70vh",
+    height: "90vh",
     width: 280,
     margin: "20px auto",
   };
