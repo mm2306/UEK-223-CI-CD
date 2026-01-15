@@ -29,6 +29,22 @@ const ListService = {
   },
 
   getAllLists: async () => {
+    const response = await api.get(`/list-entries/user`);
+    const data: List[] = (response.data as ListDTO[]).map((listElement) => {
+      return {
+        id: listElement.id,
+        title: listElement.title,
+        text: listElement.text,
+        importance:
+          Importance[listElement.importance as keyof typeof Importance],
+        createdAt: new Date(listElement.createdAt),
+        user: listElement.user,
+      } as List;
+    });
+    return data;
+  },
+
+  getAllListsAdmin: async () => {
     const response = await api.get(`/list-entries`);
     const data: List[] = (response.data as ListDTO[]).map((listElement) => {
       return {

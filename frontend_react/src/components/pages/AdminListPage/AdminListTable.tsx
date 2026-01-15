@@ -7,12 +7,12 @@ import { List, Importance } from "../../../types/models/List.model";
 import ListService from "../../../Services/ListService";
 import { useNavigate } from "react-router-dom";
 
-const ListTable = () => {
+const AdminListTable = () => {
   const navigate = useNavigate();
   const [lists, setLists] = useState<List[]>([]);
 
   useEffect(() => {
-    ListService.getAllLists().then((data) => {
+    ListService.getAllListsAdmin().then((data) => {
       setLists(data);
     });
   }, []);
@@ -75,4 +75,4 @@ const ListTable = () => {
   );
 };
 
-export default ListTable;
+export default AdminListTable;
