@@ -23,7 +23,7 @@ const ListService = {
   },
 
   addList: (list: List) => {
-    return api.post("/list-entries", {title: list.title, text: list.text, importance: list.importance, createdAt: new Date(), user: list.user }).then((res) => {
+    return api.post("/list-entries", {title: list.title, text: list.text, importance: list.importance, user: list.user }).then((res) => {
       return res.data;
     });
   },

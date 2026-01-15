@@ -19,7 +19,7 @@ export type ListDTO = {
 };
 
 export enum Importance {
-  LOW,
-  MEDIUM,
-  HIGH,
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
 }
