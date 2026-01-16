@@ -79,6 +79,7 @@ const ListTable = () => {
         </div>
       ))}
       <Button
+        id="add"
         size="small"
         color="success"
         variant="contained"

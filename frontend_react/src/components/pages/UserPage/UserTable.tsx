@@ -32,7 +32,7 @@ const UserTable = () => {
 
   return (
     <>
-      <Link href="/list">To the List</Link>
+      <Link id="linkToList" href="/list">To the List</Link>
       <div key={user.id}>
         <Card sx={{ minWidth: 275 }}>
           <CardContent>

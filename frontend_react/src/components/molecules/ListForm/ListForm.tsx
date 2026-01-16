@@ -100,6 +100,7 @@ const UserForm = ({ list, submitActionHandler, previousPage }: ListProps) => {
             sx={{ marginTop: "15px", marginRight: "10px" }}
             variant="contained"
             color="success"
+            id="submit"
             type="submit"
             disabled={!(formik.dirty && formik.isValid)}
           >
