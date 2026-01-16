@@ -7,9 +7,10 @@ import { object, string } from 'yup';
 interface UserProps {
   user: User;
   submitActionHandler: (values: User) => void;
+  previousPage: string;
 }
 
-const UserForm = ({ user, submitActionHandler }: UserProps) => {
+const UserForm = ({ user, submitActionHandler, previousPage }: UserProps) => {
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -91,7 +92,7 @@ const UserForm = ({ user, submitActionHandler }: UserProps) => {
             variant='contained'
             color='error'
             onClick={() => {
-              navigate('/user');
+              navigate("/" + previousPage);
             }}
           >
             Cancel

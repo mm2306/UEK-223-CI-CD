@@ -41,7 +41,7 @@ const Router = () => {
         }
       />
       <Route
-        path="/user/edit"
+        path="/user/edit/:previousPage"
         element={
           <PrivateRoute
             requiredAuths={[authorities.USER_CREATE]}
@@ -59,7 +59,7 @@ const Router = () => {
         }
       />
       <Route
-        path="/user/edit/:userId"
+        path="/user/edit/:previousPage/:userId"
         element={
           <PrivateRoute
             requiredAuths={[authorities.USER_CREATE]}

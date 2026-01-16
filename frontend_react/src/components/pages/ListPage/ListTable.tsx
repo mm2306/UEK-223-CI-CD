@@ -2,27 +2,23 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
-import { useEffect, useState } from "react";
 import { List, Importance } from "../../../types/models/List.model";
 import { User } from "../../../types/models/User.model";
 import roles from "../../../config/Roles";
 import ListService from "../../../Services/ListService";
-import { useNavigate } from "react-router-dom";
 import Link from "@mui/material/Link";
-
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import ActiveUserContext, {
+  ActiveUserContextType,
+} from "../../../Contexts/ActiveUserContext";
 const ListTable = () => {
   const navigate = useNavigate();
   const [lists, setLists] = useState<List[]>([]);
-  const activeUser = JSON.parse(localStorage.getItem("user") as string);
+  const activeUser = useContext(ActiveUserContext);
 
-  const isAdmin = (user: User): boolean => {
-    let returnValue: boolean = false;
-    user.roles.map((role) => {
-      if (role.name == roles["ADMIN"]) {
-        returnValue = true;
-      }
-    });
-    return returnValue;
+  const isAdmin = (user: ActiveUserContextType): boolean => {
+    return user.checkRole("ADMIN");
   };
 
   useEffect(() => {
@@ -39,14 +35,16 @@ const ListTable = () => {
     navigate("../list/edit/list/" + id);
   };
 
-  const handleDelete = (id: string) => {
-    ListService.deleteList(id);
+  const handleDelete = async (id: string) => {
+    await ListService.deleteList(id);
     window.location.reload();
+    alert("You deleted you list entry!");
   };
 
   return (
     <>
-      <Link href="/user">To User Page</Link>{"  "}
+      <Link href="/user">To User Page</Link>
+      {"  "}
       {isAdmin(activeUser) ? <Link href="/admin">To Admin Page</Link> : <></>}
       {lists.map((list) => (
         <div key={list.id}>
@@ -71,7 +69,7 @@ const ListTable = () => {
                   size="small"
                   color="error"
                   variant="contained"
-                  onClick={() => handleDelete(list.id)}
+                  onClick={async () => await handleDelete(list.id)}
                 >
                   Delete
                 </Button>
