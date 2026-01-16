@@ -14,10 +14,9 @@ import Link from "@mui/material/Link";
 
 const AdminListTable = () => {
   const navigate = useNavigate();
+  const oldValue = localStorage.getItem("showList") as unknown as string;
   const [showList, setShowList] = useState<boolean>(
-    JSON.parse(
-      (localStorage.getItem("showList") as unknown as string).toLowerCase()
-    )
+    oldValue && oldValue != null ? JSON.parse(oldValue.toLowerCase()) : false
   );
   const [users, setUsers] = useState<User[]>([]);
   const [lists, setLists] = useState<List[]>([]);
@@ -56,8 +55,7 @@ const AdminListTable = () => {
           checked={showList}
           onChange={(e) => handleShowListChange(!showList)}
         />
-        show List Entries{" "}
-        <Link href="/list">To the List</Link>
+        show List Entries <Link href="/list">To the List</Link>
         {lists.map((list) => (
           <div key={list.id}>
             <Card sx={{ minWidth: 275 }}>
@@ -120,8 +118,7 @@ const AdminListTable = () => {
           checked={showList}
           onChange={(e) => handleShowListChange(!showList)}
         />
-        show Users{" "}
-        <Link href="/list">To the List</Link>
+        show Users <Link href="/list">To the List</Link>
         {users.map((user) => (
           <div key={user.id}>
             <Card sx={{ minWidth: 275 }}>
