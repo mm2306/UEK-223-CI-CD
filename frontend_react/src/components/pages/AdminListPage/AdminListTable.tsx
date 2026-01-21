@@ -11,12 +11,14 @@ import ListService from "../../../Services/ListService";
 import UserService from "../../../Services/UserService";
 import { useNavigate } from "react-router-dom";
 import Link from "@mui/material/Link";
+import AdminListEntry from "../../molecules/AdminListEntry"
+import AdminUserEntry from "../../molecules/AdminUserEntry"
 
 const AdminListTable = () => {
   const navigate = useNavigate();
   const oldValue = localStorage.getItem("showList") as unknown as string;
   const [showList, setShowList] = useState<boolean>(
-    oldValue && oldValue != null ? JSON.parse(oldValue.toLowerCase()) : false
+    oldValue && oldValue != null ? JSON.parse(oldValue.toLowerCase()) : false,
   );
   const [users, setUsers] = useState<User[]>([]);
   const [lists, setLists] = useState<List[]>([]);
@@ -55,27 +57,7 @@ const AdminListTable = () => {
         show List Entries <Link href="/list">To the List</Link>
         {lists.map((list) => (
           <div key={list.id}>
-            <Card sx={{ minWidth: 275 }}>
-              <CardContent sx={{ borderBottom: "1px solid" }}>
-                Author: {list.user.firstName} {list.user.lastName} <br />
-                Priority: {Importance[list.importance]} <br /> {list.title}{" "}
-                <br />
-                -------------------------------------- <br />
-                {list.text}
-                <br />
-                <br />
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="error"
-                    variant="contained"
-                    onClick={async () => await handleDelete(list.id)}
-                  >
-                    Delete
-                  </Button>
-                </CardActions>
-              </CardContent>
-            </Card>
+            <AdminListEntry list={list} handleDelete={handleDelete} />
           </div>
         ))}
         <Button
@@ -107,21 +89,7 @@ const AdminListTable = () => {
         show Users <Link href="/list">To the List</Link>
         {users.map((user) => (
           <div key={user.id}>
-            <Card sx={{ minWidth: 275 }}>
-              <CardContent>
-                {user.firstName} {user.lastName} {user.email}
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="error"
-                    variant="contained"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    Delete
-                  </Button>
-                </CardActions>
-              </CardContent>
-            </Card>
+            <AdminUserEntry user={user} handleDelete={handleDelete} />
           </div>
         ))}
         <br />
