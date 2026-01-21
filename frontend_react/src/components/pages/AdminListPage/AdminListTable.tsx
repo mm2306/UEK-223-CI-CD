@@ -16,6 +16,8 @@ const AdminListTable = () => {
         oldValue && oldValue != null ? JSON.parse(oldValue.toLowerCase()) : false,
     );
     const [users, setUsers] = useState<User[]>([]);
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
     const [lists, setLists] = useState<List[]>([]);
 
     const handleShowListChange = (newValue: boolean) => {
@@ -27,10 +29,16 @@ const AdminListTable = () => {
         UserService.getAllUsers().then((data) => {
             setUsers(data.data);
         });
-        ListService.getAllListsAdmin().then((data) => {
-            setLists(data);
+        ListService.getAllListsAdminPagesCount().then((count) => {
+            setTotalPages(count);
         });
     }, []);
+
+    useEffect(() => {
+        ListService.getAllListsAdmin(page).then((data) => {
+            setLists(data);
+        });
+    }, [page]);
 
     if (showList) {
         const handleAdd = () => {
@@ -42,6 +50,7 @@ const AdminListTable = () => {
             globalThis.location.reload();
             alert("You deleted the list entry!");
         };
+
         return (
             <>
                 <Button
@@ -67,6 +76,24 @@ const AdminListTable = () => {
                         <AdminListEntry list={list} handleDelete={handleDelete} />
                     </div>
                 ))}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '10px' }}>
+                    <Button
+                        variant="contained"
+                        disabled={page === 0}
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                    >
+                        Previous
+                    </Button>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>Page {page + 1}</span>
+                    <Button
+                        variant="contained"
+                        disabled={page >= totalPages - 1}
+                        onClick={() => setPage(p => p + 1)}
+                    >
+                        Next
+                    </Button>
+                </div>
+
                 <Button
                     size="small"
                     color="success"
@@ -103,8 +130,8 @@ const AdminListTable = () => {
                 </Button>
                 <br />
                 <Switch
-                  checked={showList}
-                  onChange={() => handleShowListChange(!showList)}
+                    checked={showList}
+                    onChange={() => handleShowListChange(!showList)}
                 />
                 show Users
                 {users.map((user) => (
