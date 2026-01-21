@@ -7,11 +7,10 @@ import { useState } from "react";
 
 type ListEntryProps = {
   list: List;
-  handleDelete : (id: string) => Promise<void>
+  handleDelete: (id: string) => Promise<void>;
 };
 
 const ListEntry = ({ list, handleDelete }: ListEntryProps) => {
-
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleDeleteChange = () => {
@@ -24,6 +23,8 @@ const ListEntry = ({ list, handleDelete }: ListEntryProps) => {
         <CardContent sx={{ borderBottom: "1px solid" }}>
           Author: {list.user.firstName} {list.user.lastName} <br />
           Priority: {Importance[list.importance]} <br /> {list.title} <br />
+          Date: {list.createdAt.toLocaleDateString("en-GB")} <br />
+          Time: {list.createdAt.toLocaleTimeString("en-GB")} <br />
           -------------------------------------- <br />
           {list.text}
           <br />
