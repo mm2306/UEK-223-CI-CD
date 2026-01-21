@@ -28,8 +28,8 @@ const ListService = {
     return res.data;
   },
 
-  getAllLists: async () => {
-    const response = await api.get(`/list-entries/user`);
+  getAllLists: async (page = 0) => {
+    const response = await api.get(`/list-entries/user?page=${page}`);
     const data: List[] = (response.data as ListDTO[]).map((listElement) => {
       return {
         id: listElement.id,
@@ -44,8 +44,8 @@ const ListService = {
     return data;
   },
 
-  getAllListsAdmin: async () => {
-    const response = await api.get(`/list-entries`);
+  getAllListsAdmin: async (page = 0) => {
+    const response = await api.get(`/list-entries?page=${page}`);
     const data: List[] = (response.data as ListDTO[]).map((listElement) => {
       return {
         id: listElement.id,
@@ -58,6 +58,16 @@ const ListService = {
       } as List;
     });
     return data;
+  },
+
+  getAllListsAdminPagesCount: async () => {
+    const response = await api.get(`/list-entries/page`);
+    return response.data;
+  },
+
+  getAllListsPagesCount: async () => {
+    const response = await api.get(`/list-entries/user/page`);
+    return response.data;
   },
 
   deleteList: async (id: string) => {
