@@ -12,6 +12,8 @@ import { useContext, useEffect, useState } from "react";
 import ActiveUserContext, {
   ActiveUserContextType,
 } from "../../../Contexts/ActiveUserContext";
+import ListEntry from "../../molecules/ListEntry";
+
 const ListTable = () => {
   const navigate = useNavigate();
   const [lists, setLists] = useState<List[]>([]);
@@ -48,34 +50,11 @@ const ListTable = () => {
       {isAdmin(activeUser) ? <Link href="/admin">To Admin Page</Link> : <></>}
       {lists.map((list) => (
         <div key={list.id}>
-          <Card sx={{ minWidth: 275 }}>
-            <CardContent sx={{ borderBottom: "1px solid" }}>
-              Author: {list.user.firstName} {list.user.lastName} <br />
-              Priority: {Importance[list.importance]} <br /> {list.title} <br />
-              -------------------------------------- <br />
-              {list.text}
-              <br />
-              <br />
-              <CardActions>
-                <Button
-                  size="small"
-                  color="primary"
-                  variant="contained"
-                  onClick={() => handleEdit(list.id)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="small"
-                  color="error"
-                  variant="contained"
-                  onClick={async () => await handleDelete(list.id)}
-                >
-                  Delete
-                </Button>
-              </CardActions>
-            </CardContent>
-          </Card>
+          <ListEntry
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            list={list}
+          />
         </div>
       ))}
       <Button
