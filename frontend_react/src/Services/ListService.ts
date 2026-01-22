@@ -1,5 +1,7 @@
 import api from "../config/Api";
-import {Importance, List, ListDTO} from "../types/models/List.model";
+import { List } from "../types/models/List.model";
+import { ListDTO } from "../types/models/List.model";
+import { Importance } from "../types/models/List.model";
 
 const ListService = {
   getList: async (listID: string): Promise<List> => {
@@ -18,56 +20,34 @@ const ListService = {
     return api.put(`/list-entries/${list.id}`, list);
   },
 
-  addList: async (list: List) => {
-    const res = await api.post("/list-entries", {
-      title: list.title,
-      text: list.text,
-      importance: list.importance,
-      user: list.user
+  addList: (list: List) => {
+    return api.post("/list-entries", {title: list.title, text: list.text, importance: list.importance, user: list.user }).then((res) => {
+      return res.data;
     });
-    return res.data;
   },
 
-  getAllLists: async (page = 0, params?: { importance?: string; sortBy?: string; sortOrder?: string }) => {
-    const response = await api.get(`/list-entries/user?page=${page}`, {params});
-    const data: List[] = (response.data as ListDTO[]).map((listElement) => {
-      return {
-        id: listElement.id,
-        title: listElement.title,
-        text: listElement.text,
-        importance:
-          Importance[listElement.importance as keyof typeof Importance],
-        user: listElement.user,
-        createdAt: new Date(listElement.createdAt),
-      } as List;
-    });
-    return data;
-    },
-
-  getAllListsAdmin: async (page = 0, params?: { importance?: string; sortBy?: string; sortOrder?: string }) => {
-    const response = await api.get(`/list-entries?page=${page}`, { params });
-    const data: List[] = (response.data as ListDTO[]).map((listElement) => {
-      return {
-        id: listElement.id,
-        title: listElement.title,
-        text: listElement.text,
-        importance:
-          Importance[listElement.importance as keyof typeof Importance],
-        user: listElement.user,
-        createdAt: new Date(listElement.createdAt),
-      } as List;
-    });
-    return data;
+  getAllLists: async (params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string; isAscending?: boolean }) => {
+    const response = await api.get(`/list-entries/user`, { params });
+    return (response.data as ListDTO[]).map((listElement) => ({
+      id: listElement.id,
+      title: listElement.title,
+      text: listElement.text,
+      importance: Importance[listElement.importance as keyof typeof Importance],
+      createdAt: new Date(listElement.createdAt),
+      user: listElement.user,
+    } as List));
   },
 
-  getAllListsAdminPagesCount: async () => {
-    const response = await api.get(`/list-entries/page`);
-    return response.data;
-  },
-
-  getAllListsPagesCount: async () => {
-    const response = await api.get(`/list-entries/user/page`);
-    return response.data;
+  getAllListsAdmin: async (params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string }) => {
+    const response = await api.get(`/list-entries`, { params });
+    return (response.data as ListDTO[]).map((listElement) => ({
+      id: listElement.id,
+      title: listElement.title,
+      text: listElement.text,
+      importance: Importance[listElement.importance as keyof typeof Importance],
+      createdAt: new Date(listElement.createdAt),
+      user: listElement.user,
+    } as List));
   },
 
   deleteList: async (id: string) => {
