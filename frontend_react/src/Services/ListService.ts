@@ -26,8 +26,8 @@ const ListService = {
     });
   },
 
-  getAllLists: async (params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string; isAscending?: boolean }) => {
-    const response = await api.get(`/list-entries/user`, { params });
+  getAllLists: async (page = 0, params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string; isAscending?: boolean }) => {
+    const response = await api.get(`/list-entries/user?page=${page}`, { params });
     return (response.data as ListDTO[]).map((listElement) => ({
       id: listElement.id,
       title: listElement.title,
@@ -38,8 +38,8 @@ const ListService = {
     } as List));
   },
 
-  getAllListsAdmin: async (params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string }) => {
-    const response = await api.get(`/list-entries`, { params });
+  getAllListsAdmin: async (page = 0, params?: { importance?: string; sortBy?: string; sortOrder?: string; userId?: string }) => {
+    const response = await api.get(`/list-entries?page=${page}`, { params });
     return (response.data as ListDTO[]).map((listElement) => ({
       id: listElement.id,
       title: listElement.title,
@@ -48,6 +48,16 @@ const ListService = {
       createdAt: new Date(listElement.createdAt),
       user: listElement.user,
     } as List));
+  },
+
+   getAllListsAdminPagesCount: async () => {
+    const response = await api.get(`/list-entries/page`);
+    return response.data;
+  },
+
+  getAllListsPagesCount: async () => {
+    const response = await api.get(`/list-entries/user/page`);
+    return response.data;
   },
 
   deleteList: async (id: string) => {
