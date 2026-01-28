@@ -3,13 +3,13 @@ import axios, { AxiosInstance } from "axios";
 /**
  * isDev returns a boolean if the application is running in development-mode.
  */
-const isDev = (): boolean => !import.meta.env.MODE || import.meta.env.MODE === "development";
+const isDev = (): boolean => !process.env.MODE || process.env.MODE === "development";
 
 /**
  * Create an Axios instance for the api.
  */
 const createAPI = (): AxiosInstance => {
-  return axios.create({ baseURL: import.meta.env.VITE_BASEURL });
+  return axios.create({ baseURL: process.env.VITE_BASEURL });
 };
 
 /**inva
