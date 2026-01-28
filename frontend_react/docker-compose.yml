@@ -3,13 +3,13 @@ services:
     image: michelm2306/list-frontend:1.0
     container_name: ourspace_frontend
     ports:
-      - 3000:80
+      - 8922:80
     depends_on:
       - backend
     networks:
       - ourspace-network
     environment:
-      - VITE_BASEURL=http://backend:8080
+      - VITE_BASEURL=/api
       - VITE_LANGUAGE=de
     volumes:
       - ./src:/app/src
@@ -21,7 +21,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
-      - 8080:8080
+      - 8923:8080
     depends_on:
       - postgres
     networks:
