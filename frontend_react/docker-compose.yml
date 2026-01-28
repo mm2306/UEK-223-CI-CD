@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   frontend:
     image: michelm2306/list-frontend:1.0
