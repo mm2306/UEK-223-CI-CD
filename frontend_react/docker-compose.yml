@@ -2,30 +2,49 @@ version: '3.7'
 
 services:
   frontend:
-    restart: unless-stopped
     image: list-frontend:1.0
-    container_name: frontend
-    depends_on:
-      - backend
+    container_name: ourspace_frontend
     ports:
       - 3000:80
+    depends_on:
+      - backend
+    networks:
+      - ourspace-network
+    environment:
+      - VITE_BASEURL=http://backend:8080
+      - VITE_LANGUAGE=de
+    volumes:
+      - ./src:/app/src
   backend:
-    restart: unless-stopped
-    image: list-app:1.0
-    container_name: backend
+    image: list-backend:1.0
+    container_name: ourspace_backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     ports:
       - 8080:8080
-    environment:
-      -  ./.env
     depends_on:
-      - db
-  db:
-    restart: unless-stopped
-    image: 'postgres:10-alpine'
-    container_name: db
-    ports:
-      - '5432:5432'
+      - postgres
+    networks:
+      - ourspace-network
+  postgres:
+    image: postgres:15-alpine
+    container_name: ourspace_db
     environment:
-      POSTGRES_PASSWORD: 'postgres'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_DB: 'postgres'
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ourspace-network
+
+networks:
+  ourspace-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
