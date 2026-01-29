@@ -44,10 +44,11 @@ jobs:
         run: |
           docker compose -f frontend_react/docker-compose.yml pull
           docker compose -f frontend_react/docker-compose.yml up -d
+          echo "Current Container Status:"
           docker ps
 
       - name: Wait for Backend
-        run: npx wait-on http://localhost:8923 --timeout 120000
+        run: npx wait-on tcp:localhost:8923 http://localhost:8923 --timeout 120000
 
       - name: Install and Run Newman
         working-directory: ./spring_backend/postman
