@@ -74,7 +74,8 @@ jobs:
             git pull
             docker compose pull
             docker compose up -d
-            ngrok http --url michel.dev.noseryoung.com 8923
+            pkill ngrok || true
+            nohup ngrok http --url michel.dev.noseryoung.com 8923 > ngrok.log 2>&1 &
 
   health-check:
     runs-on: ubuntu-latest
@@ -91,7 +92,7 @@ jobs:
             echo "Waiting for services to start..."
             sleep 15
             curl -fs https://localhost:8922 > /dev/null || (echo "Frontend is down" && exit 1)
-            curl -fs -X POST http://localhost:8922/api/user/login \
+            curl -fs -X POST https://michel.dev.noseryoung.com/api/user/login \
               -H "Content-Type: application/json" \
               -d '{"email": "user@example.com", "password": "1234"}' || (echo "Backend login failed" && exit 1)
 
