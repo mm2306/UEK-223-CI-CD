@@ -48,8 +48,8 @@ jobs:
 
       - name: Start Backend from Docker
         run: |
-          docker pull michelm2306/list-frontend:1.0
-          docker run -d -p 8080:8080 --name backend-container michelm2306/list-frontend:1.0
+          docker pull michelm2306/list-backend:1.0
+          docker run -d -p 8080:8080 --name backend-container michelm2306/list-backend:1.0
           echo "Waiting for Docker container to start..."
           sleep 30
 
