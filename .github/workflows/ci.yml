@@ -31,9 +31,39 @@ jobs:
           push: true
           tags: michelm2306/list-frontend:1.0
 
-  integration-tests:
-    runs-on: ubuntu-latest
+  backend-integration-tests:
+    name: Run postman collection
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java (If running JAR) or Docker
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Start Backend
+        run: |
+          sleep 20 # Give the app time to boot up
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.17.0'
+
+      - name: Install newman
+        run: yarn install -g newman
+
+      - name: Run Postman Collection
+        working-directory: ./spring_backend/postman
+        run: |
+          newman run ./collections/UEK-223-Group_6.postman_collection.json -e ./UEK-223-Group_6-Environment.postman_environment.json
+
+  frontend-e2e-tests:
+    runs-on: ubuntu-latest
+    needs: backend-integration-tests
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,7 +84,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: integration-tests
+    needs: frontend-e2e-tests
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
@@ -98,14 +128,14 @@ jobs:
       uses: tsickert/discord-webhook@v7.0.0
       with:
         webhook-url: ${{ secrets.WEBHOOK_URL }}
-        content: "@everyone Michel submitted a new commit on main branch with successful running tests and deploy [visit site](https://michel.dev.noseryoung.ch) #IndianBoyzSubmitCommits"
+        content: "@everyone ✅ Michel submitted a new commit on main branch with successful running tests and deploy [visit site](https://michel.dev.noseryoung.ch) #IndianBoyzSubmitCommits"
         username: "CI/CD Pipeline"
         avatar-url: "https://static.wikia.nocookie.net/roblox-goofy-runners/images/6/66/Nerd_Current.png"
 
   revert-commit:
     runs-on: ubuntu-latest
     if: failure()
-    needs: [build, integration-tests, deploy, health-check]
+    needs: [build, backend-integration-tests, frontend-e2e-tests, deploy, health-check]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -122,5 +152,5 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
-          content: "⚠️ **Pipeline Failed!** Michel's last commit caused an error. The commit has been automatically reverted on `main`. Check the logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          content: "@everyone ⚠️ **Pipeline Failed!** Michel's last commit caused an error. The commit has been automatically reverted on `main`. Check the logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           username: "CI/CD Revert Bot"
