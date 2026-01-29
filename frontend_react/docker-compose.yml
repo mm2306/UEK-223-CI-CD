@@ -9,7 +9,7 @@ services:
     networks:
       - ourspace-network
     environment:
-      - VITE_BASEURL=http://michel.dev.noseryoung.ch:8923/api
+      - VITE_BASEURL=/api
       - VITE_LANGUAGE=de
     volumes:
       - ./src:/app/src
