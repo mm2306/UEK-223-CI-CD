@@ -52,7 +52,7 @@ jobs:
         working-directory: ./spring_backend/postman
         run: |
           # Find collection inside the 'collection' subfolder
-          COLLECTION=$(find ./collections -name "*Collection.json" | head -n 1)
+          COLLECTION=$(find ./collections -name "*postman_collection.json" | head -n 1)
           
           # Find environment in the current folder (postman/)
           ENVIRONMENT=$(find . -maxdepth 1 -name "*Environment.postman_environment.json" | head -n 1)
