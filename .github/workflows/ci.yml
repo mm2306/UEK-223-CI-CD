@@ -1,6 +1,6 @@
 name: CI/CD Pipeline
 
-on: 
+on:
   push:
     branches:
       - main
@@ -28,9 +28,34 @@ jobs:
           push: true
           tags: michelm2306/list-frontend:1.0
 
-  deploy:
+  integration-tests:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          docker compose -f frontend_react/docker-compose.yml up -d
+          # Wait for backend to be ready
+          sleep 10
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: frontend_react
+          wait-on: 'http://localhost:8922'
+          wait-on-timeout: 60
+
+      - name: Stop containers
+        if: always()
+        run: docker compose -f frontend_react/docker-compose.yml down
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: integration-tests
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
@@ -44,6 +69,17 @@ jobs:
             git pull
             docker compose pull
             docker compose up -d
+
+      - name: Deploy Health Check
+        run: |
+          echo "Waiting for services to start..."
+          sleep 10
+          curl -f http://michel.dev.noseryoung.ch:8922 || (echo "Frontend is down" && exit 1)
+          curl -f -X POST http://michel.dev.noseryoung.ch:8923/api/user/login \
+            -H "Content-Type: application/json" \
+            -d '{"email": "user@example.com", "password": "1234"}' || (echo "Backend login failed" && exit 1)
+
+
   message:
     runs-on: ubuntu-latest
     needs: deploy
