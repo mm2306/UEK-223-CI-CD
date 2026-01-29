@@ -91,8 +91,8 @@ jobs:
           script: |
             echo "Waiting for services to start..."
             sleep 15
-            curl -fs https://michel.dev.noseryoung.com > /dev/null || (echo "Frontend is down" && exit 1)
-            curl -fs -X POST https://michel.dev.noseryoung.com/api/user/login \
+            curl -fs https://michel.dev.noseryoung.ch > /dev/null || (echo "Frontend is down" && exit 1)
+            curl -fs -X POST https://michel.dev.noseryoung.ch/api/user/login \
               -H "Content-Type: application/json" \
               -d '{"email": "user@example.com", "password": "1234"}' || (echo "Backend login failed" && exit 1)
 
