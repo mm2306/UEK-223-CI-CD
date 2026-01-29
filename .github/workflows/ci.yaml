@@ -53,7 +53,7 @@ jobs:
         run: |
           npx newman run "$(find . -name '*Collection.json')" \
             -e "$(find . -name '*Environment.postman_environment.json')" \
-            --env-var "baseUrl=http://localhost:8080"
+            --env-var "baseUrl=http://localhost:8923"
 
       - name: Stop and cleanup Docker
         if: always()
