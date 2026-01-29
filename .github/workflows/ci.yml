@@ -47,6 +47,8 @@ jobs:
           working-directory: frontend_react
           wait-on: 'http://localhost:8922'
           wait-on-timeout: 60
+          config: baseUrl=http://localhost:8922
+
 
       - name: Stop containers
         if: always()
