@@ -85,20 +85,19 @@ jobs:
           port: 2222
           script: |
             echo "Waiting for services to start..."
-            sleep 10
-            curl -f http://localhost:8922 || (echo "Frontend is down" && exit 1)
-            curl -f -X POST http://localhost:8923/api/user/login \
+            sleep 15
+            curl -fs http://localhost:8922 > /dev/null || (echo "Frontend is down" && exit 1)
+            curl -fs -X POST http://localhost:8922/api/user/login \
               -H "Content-Type: application/json" \
               -d '{"email": "user@example.com", "password": "1234"}' || (echo "Backend login failed" && exit 1)
+
 
 
 
   message:
     runs-on: ubuntu-latest
     needs: health-check
-    if: always()
     steps:
-
     - name: Discord Webhook Action
       uses: tsickert/discord-webhook@v7.0.0
       with:
