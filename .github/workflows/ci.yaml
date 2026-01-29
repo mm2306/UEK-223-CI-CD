@@ -51,23 +51,25 @@ jobs:
       - name: Install and Run Newman
         working-directory: ./spring_backend/postman
         run: |
-          # 1. List files to verify we are in the right spot (helpful for debugging)
-          ls -R
+          # Find collection inside the 'collection' subfolder
+          COLLECTION=$(find ./collection -name "*Collection.json" | head -n 1)
           
-          # 2. Capture the paths into variables
-          COLLECTION=$(find . -maxdepth 2 -name "*Collection.json" | head -n 1)
-          ENVIRONMENT=$(find . -maxdepth 2 -name "*Environment.postman_environment.json" | head -n 1)
+          # Find environment in the current folder (postman/)
+          ENVIRONMENT=$(find . -maxdepth 1 -name "*Environment.postman_environment.json" | head -n 1)
           
-          # 3. Check if collection was found
+          # Debugging: Print found paths to the logs
+          echo "Found Collection: $COLLECTION"
+          echo "Found Environment: $ENVIRONMENT"
+
           if [ -z "$COLLECTION" ]; then
-            echo "ERROR: Postman Collection file not found in $(pwd)"
+            echo "ERROR: Could not find collection file in ./spring_backend/postman/collection"
             exit 1
           fi
-          
-          # 4. Run Newman
+
           npx newman run "$COLLECTION" \
             ${ENVIRONMENT:+-e "$ENVIRONMENT"} \
-            --env-var "baseUrl=http://localhost:8923"
+            --env-var "baseUrl=http://localhost:8923" \
+            --reporters cli
 
       - name: Stop and cleanup Docker
         if: always()
