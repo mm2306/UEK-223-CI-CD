@@ -52,13 +52,12 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: '18.17.0'
-          cache: 'yarn'
+          node-version: '20.19.4'
 
-      - name: Install dependencies
+      - name: Install Newman
         working-directory: ./spring_backend/postman
         run: |
-          yarn add newman minimist @actions/core
+          npm install newman minimist @actions/core
 
       - name: Run Postman Collection
         working-directory: ./spring_backend/postman
