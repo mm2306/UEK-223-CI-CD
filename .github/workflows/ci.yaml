@@ -48,9 +48,6 @@ jobs:
           sleep 10
           docker ps
 
-      - name: Wait for Backend
-        run: npx wait-on http://localhost:8080 --timeout 60000 --interval 2000
-
       - name: Install and Run Newman
         working-directory: ./spring_backend/postman
         run: |
