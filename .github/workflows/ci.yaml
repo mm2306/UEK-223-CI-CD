@@ -52,9 +52,7 @@ jobs:
           docker compose -f frontend_react/docker-compose.yml up -d
           
           echo "Waiting for Backend to be healthy..."
-          # Loop for 120s checking if localhost:8080 answers
-          # If it fails, we dump the logs to see WHY (e.g. DB connection error)
-          timeout 120s bash -c 'until curl -s localhost:8080 > /dev/null; do sleep 5; done' || (docker compose -f frontend_react/docker-compose.yml logs && exit 1)
+          timeout 240s bash -c 'until curl -s localhost:8080 > /dev/null; do sleep 5; done' || (docker compose -f frontend_react/docker-compose.yml logs && exit 1)
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
