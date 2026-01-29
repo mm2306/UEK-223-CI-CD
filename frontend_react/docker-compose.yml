@@ -9,7 +9,7 @@ services:
     networks:
       - ourspace-network
     environment:
-      - VITE_BASEURL=/api
+      - VITE_BASEURL=http://backend:8080/api
       - VITE_LANGUAGE=de
     volumes:
       - ./src:/app/src
