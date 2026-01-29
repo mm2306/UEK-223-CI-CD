@@ -54,4 +54,4 @@ jobs:
         webhook-url: ${{ secrets.WEBHOOK_URL }}
         content: "@everyone Michel submitted a new commit on main branch #IndianBoyzSubmitCommits"
         username: "CI/CD Pipeline"
-        avatar-url: "../../Nerd_Current.jpg"
+        avatar-url: "https://static.wikia.nocookie.net/roblox-goofy-runners/images/6/66/Nerd_Current.png"
