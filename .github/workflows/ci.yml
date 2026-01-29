@@ -41,33 +41,32 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
-      - name: Setup Java (If running JAR) or Docker
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: Start Backend
         run: |
-          sleep 20
+          echo "Starting Backend..."
+          java -jar ./spring_backend/target/*.jar & 
+          sleep 30 
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: '20.19.4'
 
-      - name: Install Newman
-        working-directory: ./spring_backend/postman
-        run: |
-          npm install newman minimist @actions/core
-
-      - name: List files in Postman directory
+      - name: List files (For Debugging)
         working-directory: ./spring_backend/postman
         run: ls -R
 
-      - name: Run Postman Collection
+      - name: Install and Run Newman
         working-directory: ./spring_backend/postman
         run: |
           npm install -g newman
+          # Double check these filenames match the output of 'ls -R'
           newman run ./UEK-223-Group_6-Collection.json -e ./UEK-223-Group_6-Environment.postman_environment.json
 
   frontend-e2e-tests:
