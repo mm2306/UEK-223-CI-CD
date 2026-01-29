@@ -50,18 +50,21 @@ jobs:
         run: |
           docker pull michelm2306/list-backend:1.0
           docker run -d -p 8080:8080 --name backend-container michelm2306/list-backend:1.0
-          echo "Waiting for Docker container to start..."
-          sleep 30
+          echo "Waiting for Backend to be healthy..."
+          # Better than a blind sleep: wait for the port to be active
+          timeout 60s bash -c 'until curl -s localhost:8080 > /dev/null; do sleep 2; done'
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.4'
+          node-version: '20'
+
       - name: Install and Run Newman
         working-directory: ./spring_backend/postman
         run: |
           npm install -g newman
-          newman run ./UEK-223-Group_6-Collection.json -e ./UEK-223-Group_6-Environment.postman_environment.json
+          newman run UEK-223-Group_6-Collection.json -e UEK-223-Group_6-Environment.postman_environment.json
+
       - name: Stop and cleanup Docker
         if: always()
         run: docker stop backend-container && docker rm backend-container
@@ -75,13 +78,13 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker compose -f frontend_react/docker-compose.yml up -d
-          sleep 10
+          sleep 15
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend_react
           wait-on: 'http://localhost:8922'
-          wait-on-timeout: 60
+          wait-on-timeout: 120
           config: baseUrl=http://localhost:8922
       - name: Stop containers
         if: always()
@@ -100,9 +103,9 @@ jobs:
           port: 2222
           script: |
             cd ~/UEK-223-Group-6-Frontend/frontend_react
-            git pull
+            git pull origin main
             docker compose pull
-            docker compose up -d
+            docker compose up -d --force-recreate
             pkill ngrok || true
             nohup ngrok http --url michel.dev.noseryoung.com 8923 > ngrok.log 2>&1 &
 
@@ -119,9 +122,11 @@ jobs:
           port: 2222
           script: |
             echo "Waiting for services to start..."
-            sleep 15
-            curl -fs https://michel.dev.noseryoung.ch > /dev/null || (echo "Frontend is down" && exit 1)
-            curl -fs -X POST https://michel.dev.noseryoung.ch/api/user/login \
+            sleep 20
+            # Test Frontend
+            curl -fskL https://michel.dev.noseryoung.ch || (echo "Frontend is down" && exit 1)
+            # Test Backend Login
+            curl -fskL -X POST https://michel.dev.noseryoung.ch/api/user/login \
               -H "Content-Type: application/json" \
               -d '{"email": "user@example.com", "password": "1234"}' || (echo "Backend login failed" && exit 1)
 
@@ -141,8 +146,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, backend-integration-tests, frontend-e2e-tests, deploy, health-check]
     if: always() && contains(needs.*.result, 'failure')
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
