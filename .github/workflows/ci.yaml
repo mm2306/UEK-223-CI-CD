@@ -21,7 +21,7 @@ jobs:
       - name: Extract version
         id: vars
         run: |
-          GIT_MESSAGE="ohio"
+          GIT_MESSAGE="${{ github.event.commits[0].message }}"
           VERSION=$(echo "$GIT_MESSAGE" | sed -e 's/[Rr]evert "//g' -e 's/"//g' | cut -d'|' -f1 | xargs)
           [ -z "$VERSION" ] && VERSION="latest"
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
