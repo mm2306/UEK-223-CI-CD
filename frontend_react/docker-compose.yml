@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: michelm2306/list-frontend:latest
+    image: michelm2306/list-frontend:1.0
     container_name: ourspace_frontend
     ports:
       - 8922:80
@@ -14,7 +14,7 @@ services:
     volumes:
       - ./src:/app/src
   backend:
-    image: michelm2306/list-backend:latest
+    image: michelm2306/list-backend:1.0
     container_name: ourspace_backend
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
