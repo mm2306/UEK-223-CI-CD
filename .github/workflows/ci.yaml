@@ -18,13 +18,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Extract version
+      - name: Extract version from commit message
         id: vars
         run: |
           GIT_MESSAGE="${{ github.event.commits[0].message }}"
           VERSION=$(echo "$GIT_MESSAGE" | sed -e 's/[Rr]evert "//g' -e 's/"//g' | cut -d'|' -f1 | xargs)
-          [ -z "$VERSION" ] && VERSION="latest"
+          if [ -z "$VERSION" ]; then
+            VERSION="latest"
+          fi
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version: $VERSION"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
@@ -37,9 +40,7 @@ jobs:
         with:
           context: ./frontend_react
           push: true
-          tags: |
-            michelm2306/list-frontend:${{ env.APP_VERSION }}
-            michelm2306/list-frontend:latest
+          tags: michelm2306/list-frontend:${{ env.APP_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -50,24 +51,39 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-      - name: Cache Node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+
       - name: Start Backend
         run: |
           docker compose -f frontend_react/docker-compose.yml pull
           docker compose -f frontend_react/docker-compose.yml up -d
+          echo "Waiting 10s for Docker to initialize networking..."
           sleep 10
+          docker ps
+
       - name: Install and Run Newman
         working-directory: ./spring_backend/postman
         run: |
           COLLECTION=$(find ./collections -name "*postman_collection.json" | head -n 1)
           ENVIRONMENT=$(find . -maxdepth 1 -name "*Environment.postman_environment.json" | head -n 1)
-          npx newman run "$COLLECTION" ${ENVIRONMENT:+-e "$ENVIRONMENT"} --env-var "baseUrl=http://localhost:8923" --reporters cli
+          
+          echo "Found Collection: $COLLECTION"
+          echo "Found Environment: $ENVIRONMENT"
+
+          if [ -z "$COLLECTION" ]; then
+            echo "ERROR: Could not find collection file in ./spring_backend/postman/collections"
+            exit 1
+          fi
+
+          if [ -z "$ENVIRONMENT" ]; then
+            echo "ERROR: Could not find environment file in ./spring_backend/postman"
+            exit 1
+          fi
+
+          npx newman run "$COLLECTION" \
+            ${ENVIRONMENT:+-e "$ENVIRONMENT"} \
+            --env-var "baseUrl=http://localhost:8923" \
+            --reporters cli
+
       - name: Stop and cleanup Docker
         if: always()
         run: docker compose -f frontend_react/docker-compose.yml down
@@ -79,12 +95,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Docker Compose
-        run: docker compose -f frontend_react/docker-compose.yml up -d
+        run: |
+          docker compose -f frontend_react/docker-compose.yml up -d
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend_react
-          cache-key: ${{ runner.os }}-cypress-${{ hashFiles('frontend_react/package-lock.json') }}
           wait-on: 'http://localhost:8922'
           wait-on-timeout: 120
           config: baseUrl=http://localhost:8922
@@ -134,7 +150,7 @@ jobs:
       uses: tsickert/discord-webhook@v7.0.0
       with:
         webhook-url: ${{ secrets.WEBHOOK_URL }}
-        content: "✅ Michel submitted a new commit. [visit site](https://michel.dev.noseryoung.ch) #StayComitting"
+        content: "✅ Michel submitted a new commit. [visit site](https://michel.dev.noseryoung.ch)"
 
   revert-commit:
     runs-on: ubuntu-latest
