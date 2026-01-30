@@ -119,7 +119,7 @@ jobs:
             docker compose pull
             docker compose up -d --force-recreate
             pkill ngrok || true
-            nohup ngrok http --url michel.dev.noseryoung.com 8922 > ngrok.log 2>&1 &
+            nohup ngrok http --url michel.dev.young.com 8922 > ngrok.log 2>&1 &
 
   health-check:
     runs-on: ubuntu-latest
