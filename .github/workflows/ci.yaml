@@ -41,6 +41,8 @@ jobs:
           context: ./frontend_react
           push: true
           tags: michelm2306/list-frontend:${{ env.APP_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   backend-integration-tests:
     name: Run postman collection
