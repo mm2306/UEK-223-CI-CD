@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     steps:
-      - name: Health Check
+      - name: Remote Health Check
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -135,8 +135,6 @@ jobs:
           script: |
             sleep 20
             curl -fskL https://michel.dev.noseryoung.ch || exit 1
-      - name: Remote Health Check
-        run: curl -fskL https://michel.dev.noseryoung.ch || exit 1
 
   message-success:
     runs-on: ubuntu-latest
