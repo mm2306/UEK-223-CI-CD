@@ -32,7 +32,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and Push Docker Image
+      - name: Build and Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./frontend_react
@@ -40,6 +40,16 @@ jobs:
           tags: |
             michelm2306/list-frontend:${{ env.APP_VERSION }}
             michelm2306/list-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./spring_backend
+          push: true
+          tags: |
+            michelm2306/list-backend:${{ env.APP_VERSION }}
+            michelm2306/list-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
