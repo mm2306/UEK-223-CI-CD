@@ -150,6 +150,7 @@ jobs:
         embed-image-url: "https://cdn.dailysports.net/dailysports/20250914/63ee67a9f021b7766460a42ba6f6b5f7dd1b299c7bc31df0c17b9429f8f37ca3-1200-675.jpg"
         embed-title: "Aura"
         embed-color: 65280
+
   revert-commit:
     runs-on: ubuntu-latest
     needs: [build, backend-integration-tests, frontend-e2e-tests, deploy, health-check]
