@@ -24,6 +24,7 @@ jobs:
           GIT_MESSAGE="${{ github.event.commits[0].message }}"
           VERSION=$(echo "${GIT_MESSAGE%%|* }")
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version: ${{ env.APP_VERSION }}"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
